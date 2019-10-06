@@ -1,0 +1,36 @@
+version: '3'
+services:
+  service:
+    container_name: my-service
+    image: demo:latest
+    build: 
+      context: .
+    ports: 
+      - "8000:8000"
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/data:/promtheus
+    command:
+     - '--config.file=/etc/prometheus/prometheus.yml'
+    
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:6.4.0-beta2
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes: 
+      - ./grafana/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   ports:
+  #     - "9100:9100"
